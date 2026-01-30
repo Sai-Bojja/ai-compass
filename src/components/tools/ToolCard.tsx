@@ -47,100 +47,100 @@ export function ToolCard({ tool, rank, showRank = false }: ToolCardProps) {
   const primaryCategory = tool.categories?.[0];
 
   return (
-    <Card className="group relative overflow-hidden border bg-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-0.5">
-      <CardContent className="p-5">
-        <div className="flex gap-4">
-          {/* Rank indicator */}
-          {showRank && rank && (
-            <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-secondary font-semibold text-lg text-secondary-foreground">
-              {rank}
-            </div>
-          )}
-
-          {/* Logo */}
-          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary flex items-center justify-center overflow-hidden">
-            {tool.logo_url ? (
-              <img
-                src={tool.logo_url}
-                alt={`${tool.name} logo`}
-                className="w-8 h-8 object-contain"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/placeholder.svg";
-                }}
-              />
-            ) : (
-              <span className="text-lg font-bold text-muted-foreground">
-                {tool.name.charAt(0)}
-              </span>
+    <Link to={`/tools/${tool.slug}`} className="block">
+      <Card className="group relative overflow-hidden border bg-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-0.5 cursor-pointer">
+        <CardContent className="p-5">
+          <div className="flex gap-4">
+            {/* Rank indicator */}
+            {showRank && rank && (
+              <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-secondary font-semibold text-lg text-secondary-foreground">
+                {rank}
+              </div>
             )}
-          </div>
 
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <Link
-                  to={`/tools/${tool.slug}`}
-                  className="inline-flex items-center gap-1.5 font-semibold text-foreground hover:text-primary transition-colors"
-                >
-                  {tool.name}
-                  {tool.status === "verified" && (
-                    <CheckCircle2 className="h-4 w-4 text-accent" />
-                  )}
-                </Link>
-                <p className="mt-0.5 text-sm text-muted-foreground line-clamp-2">
-                  {tool.tagline || tool.description}
-                </p>
-              </div>
-
-              {/* Score */}
-              <div className="flex-shrink-0 text-right">
-                <div className={cn("text-xl font-bold tabular-nums", getScoreColor(Number(tool.composite_score)))}>
-                  {Number(tool.composite_score).toFixed(0)}
-                </div>
-                <div className="text-xs text-muted-foreground">Score</div>
-              </div>
-            </div>
-
-            {/* Metadata row */}
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              {primaryCategory && (
-                <Badge variant="secondary" className={cn("text-xs", getCategoryClass(primaryCategory.slug))}>
-                  {primaryCategory.name}
-                </Badge>
+            {/* Logo */}
+            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary flex items-center justify-center overflow-hidden">
+              {tool.logo_url ? (
+                <img
+                  src={tool.logo_url}
+                  alt={`${tool.name} logo`}
+                  className="w-8 h-8 object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/placeholder.svg";
+                  }}
+                />
+              ) : (
+                <span className="text-lg font-bold text-muted-foreground">
+                  {tool.name.charAt(0)}
+                </span>
               )}
+            </div>
 
-              <Badge variant={getPricingBadgeVariant(tool.pricing_model)} className="text-xs capitalize">
-                {tool.pricing_model.replace("_", " ")}
-              </Badge>
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 font-semibold text-foreground group-hover:text-primary transition-colors">
+                    {tool.name}
+                    {tool.status === "verified" && (
+                      <CheckCircle2 className="h-4 w-4 text-accent" />
+                    )}
+                  </span>
+                  <p className="mt-0.5 text-sm text-muted-foreground line-clamp-2">
+                    {tool.tagline || tool.description}
+                  </p>
+                </div>
 
-              <div className="flex items-center gap-3 ml-auto text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3" />
-                  AI: {Number(tool.ai_score).toFixed(0)}
-                </span>
-                <span className="flex items-center gap-1">
-                  <MessageSquare className="h-3 w-3" />
-                  Community: {Number(tool.community_score).toFixed(0)}
-                </span>
+                {/* Score */}
+                <div className="flex-shrink-0 text-right">
+                  <div className={cn("text-xl font-bold tabular-nums", getScoreColor(Number(tool.composite_score)))}>
+                    {Number(tool.composite_score).toFixed(0)}
+                  </div>
+                  <div className="text-xs text-muted-foreground">Overall</div>
+                </div>
+              </div>
+
+              {/* Metadata row */}
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {primaryCategory && (
+                  <Badge variant="secondary" className={cn("text-xs", getCategoryClass(primaryCategory.slug))}>
+                    {primaryCategory.name}
+                  </Badge>
+                )}
+
+                <Badge variant={getPricingBadgeVariant(tool.pricing_model)} className="text-xs capitalize">
+                  {tool.pricing_model.replace("_", " ")}
+                </Badge>
+
+                <div className="flex items-center gap-3 ml-auto text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <TrendingUp className="h-3 w-3" />
+                    AI: {Number(tool.ai_score).toFixed(0)}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <MessageSquare className="h-3 w-3" />
+                    Community: {Number(tool.community_score).toFixed(0)}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* External link button on hover */}
-        {tool.website_url && (
-          <a
-            href={tool.website_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-          </a>
-        )}
-      </CardContent>
-    </Card>
+          {/* External link button on hover */}
+          {tool.website_url && (
+            <a
+              href={tool.website_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+            </a>
+          )}
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
+

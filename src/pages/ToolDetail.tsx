@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Header } from "@/components/layout/Header";
+import { AIScoreExplainer } from "@/components/tools/AIScoreExplainer";
 import { ScoreBreakdown } from "@/components/tools/ScoreBreakdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,7 @@ export default function ToolDetailPage() {
         ...data,
         categories: (data.tool_categories as any)?.map((tc: any) => tc.category).filter(Boolean) || [],
         features: featuresArray,
+        ai_score_components: (data as any).ai_score_components || null,
       };
     },
     enabled: !!slug,
@@ -224,10 +226,23 @@ export default function ToolDetailPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Score breakdown */}
+            {/* AI Score Explainer - New detailed breakdown */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Score Breakdown</CardTitle>
+                <CardTitle className="text-lg">AI Score Breakdown</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AIScoreExplainer
+                  aiScore={Number(tool.ai_score)}
+                  aiScoreComponents={tool.ai_score_components}
+                />
+              </CardContent>
+            </Card>
+
+            {/* High-level score summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Score Overview</CardTitle>
               </CardHeader>
               <CardContent>
                 <ScoreBreakdown

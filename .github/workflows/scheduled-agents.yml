@@ -1,0 +1,101 @@
+# =====================================================
+# SCHEDULED AGENTS - GitHub Actions Workflow
+# =====================================================
+# This workflow triggers the AI-powered scoring agents
+# on a schedule, providing free automation without pg_cron.
+#
+# Schedules:
+# - Ranking Agent: Daily at 02:00 UTC
+# - Community Scoring: Every 6 hours
+#
+# Required Secrets (Settings → Secrets → Actions):
+# - SUPABASE_URL: https://YOUR-PROJECT.supabase.co
+# - SUPABASE_ANON_KEY: Your anon/public key
+# =====================================================
+
+name: Scheduled Agents
+
+on:
+  schedule:
+    # Daily ranking at 02:00 UTC
+    - cron: '0 2 * * *'
+    # Community scoring every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
+  
+  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: 'Which agent to run'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - ranking
+          - community
+
+jobs:
+  ranking-agent:
+    name: Ranking Agent
+    runs-on: ubuntu-latest
+    # Run on daily schedule OR manual trigger for ranking/both
+    if: |
+      github.event.schedule == '0 2 * * *' || 
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.agent == 'both' || github.event.inputs.agent == 'ranking'))
+    
+    steps:
+      - name: Trigger Ranking Agent
+        run: |
+          echo "🤖 Triggering Ranking Agent..."
+          
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            "${{ secrets.SUPABASE_URL }}/functions/v1/ranking-agent" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"source": "github-actions", "scheduled": true}')
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          echo "Response: $BODY"
+          echo "HTTP Code: $HTTP_CODE"
+          
+          if [ "$HTTP_CODE" -ge 400 ]; then
+            echo "❌ Ranking agent failed with HTTP $HTTP_CODE"
+            exit 1
+          fi
+          
+          echo "✅ Ranking agent completed successfully"
+
+  community-scoring:
+    name: Community Scoring
+    runs-on: ubuntu-latest
+    # Run on 6-hour schedule OR manual trigger for community/both
+    if: |
+      github.event.schedule == '0 */6 * * *' || 
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.agent == 'both' || github.event.inputs.agent == 'community'))
+    
+    steps:
+      - name: Trigger Community Scoring Agent
+        run: |
+          echo "👥 Triggering Community Scoring Agent..."
+          
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            "${{ secrets.SUPABASE_URL }}/functions/v1/community-scoring" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"source": "github-actions", "scheduled": true}')
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          echo "Response: $BODY"
+          echo "HTTP Code: $HTTP_CODE"
+          
+          if [ "$HTTP_CODE" -ge 400 ]; then
+            echo "❌ Community scoring failed with HTTP $HTTP_CODE"
+            exit 1
+          fi
+          
+          echo "✅ Community scoring completed successfully"

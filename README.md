@@ -1,73 +1,117 @@
-# Welcome to your Lovable project
+# Aideas.ai - AI Tool Intelligence Platform
 
-## Project info
+> **Production-grade AI tool discovery platform** powered by hybrid AI + community ranking.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Overview
 
-## How can I edit this code?
+Aideas.ai helps users discover, compare, and choose the best AI tools through:
+- **AI-powered scoring**: Tools evaluated by AI agents analyzing features, documentation, and capabilities
+- **Community validation**: Rankings adapt based on real user feedback and discussions
+- **Intelligent search**: Chat with AI assistant for personalized recommendations
+- **Rich metadata**: Comprehensive tool profiles with scores, features, and pricing
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## Quick Start
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### For Development
 
-Changes made via Lovable will be committed automatically to this repo.
+See [**SETUP.md**](./SETUP.md) for complete setup instructions.
 
-**Use your preferred IDE**
+**TL;DR:**
+```bash
+# 1. Install dependencies
+npm install
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+# 2. Set up environment
+cp .env.example .env
+# Edit .env with your Supabase credentials
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+# 3. Run migrations (via Supabase CLI or Dashboard)
+supabase db push
 
-Follow these steps:
+# 4. Seed database
+npm run seed
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 5. Start dev server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Project Structure
 
-**Use GitHub Codespaces**
+This project is built with modern web technologies for production use:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **Frontend**: Vite + React 18 + TypeScript
+- **UI**: shadcn/ui (Radix primitives + Tailwind CSS)
+- **Backend**: Supabase (Postgres + Auth + Edge Functions)
+- **State**: TanStack Query for server state
+- **Routing**: React Router v6
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## Key Features
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+✅ **Tool Discovery**: Browse 15+ AI tools across 7 categories  
+✅ **Smart Ranking**: Hybrid scoring (60% AI analysis, 40% community)  
+✅ **Community Q&A**: Ask questions, share experiences  
+✅ **AI Chat**: Get personalized tool recommendations (Phase 2)  
+✅ **RLS Security**: Database-level security with Row Level Security  
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Documentation
 
-## Can I connect a custom domain to my Lovable project?
+- [**SETUP.md**](./SETUP.md) - Development setup guide
+- [**system_analysis.md**](./artifacts/) - Architecture deep dive
+- [**implementation_plan.md**](./artifacts/) - Roadmap and phases
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Development Commands
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```bash
+npm run dev              # Start development server
+npm run build            # Build for production
+npm run preview          # Preview production build
+npm run lint             # Lint code
+npm test                 # Run tests (Phase 4)
+
+# Database
+npm run seed             # Seed database with sample data
+npm run types:generate   # Regenerate TypeScript types from DB
+```
+
+---
+
+## Environment Variables
+
+Required for development:
+```env
+VITE_SUPABASE_PROJECT_ID=your-project-id
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # For seeding
+```
+
+See `.env.example` for complete reference.
+
+---
+
+## Deployment
+
+### Frontend
+Deploy to Vercel, Netlify, or any static hosting:
+```bash
+npm run build
+# Deploy the dist/ folder
+```
+
+### Backend
+Supabase handles backend infrastructure:
+- Database: Postgres with RLS
+- Auth: Built-in authentication
+- Edge Functions: Deno runtime (for AI chat)
+
+---

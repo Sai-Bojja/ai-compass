@@ -1,21 +1,22 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Header } from "@/components/layout/Header";
 import { ToolCard } from "@/components/tools/ToolCard";
 import { CategoryFilter } from "@/components/tools/CategoryFilter";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, ArrowRightLeft } from "lucide-react";
 
 type SortOption = "composite_score" | "ai_score" | "community_score" | "name" | "created_at";
 
 export default function ToolsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
-  
+
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam);
   const [sortBy, setSortBy] = useState<SortOption>("composite_score");
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,7 +53,7 @@ export default function ToolsPage() {
   const filteredTools = tools?.filter((tool) =>
     searchQuery
       ? tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tool.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      tool.description?.toLowerCase().includes(searchQuery.toLowerCase())
       : true
   );
 
@@ -71,11 +72,19 @@ export default function ToolsPage() {
 
       <main className="container py-8">
         {/* Page header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">AI Tools Directory</h1>
-          <p className="mt-2 text-muted-foreground">
-            Discover and compare the best AI tools, ranked by AI analysis and community feedback
-          </p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">AI Tools Directory</h1>
+            <p className="mt-2 text-muted-foreground">
+              Discover and compare the best AI tools, ranked by AI analysis and community feedback
+            </p>
+          </div>
+          <Button asChild variant="outline">
+            <Link to="/tools/compare">
+              <ArrowRightLeft className="mr-2 h-4 w-4" />
+              Compare Tools
+            </Link>
+          </Button>
         </div>
 
         {/* Filters */}
@@ -84,9 +93,9 @@ export default function ToolsPage() {
             selectedCategory={selectedCategory}
             onCategoryChange={handleCategoryChange}
           />
-          
+
           <div className="flex-1" />
-          
+
           <div className="flex gap-3">
             <div className="relative flex-1 sm:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -97,7 +106,7 @@ export default function ToolsPage() {
                 className="pl-9"
               />
             </div>
-            
+
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
               <SelectTrigger className="w-40">
                 <SlidersHorizontal className="mr-2 h-4 w-4" />

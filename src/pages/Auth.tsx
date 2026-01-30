@@ -55,7 +55,7 @@ export default function AuthPage() {
     } else {
       toast({
         title: "Account created!",
-        description: "Welcome to AI Tools. Start exploring!",
+        description: "Welcome to Aideas.ai. Start exploring!",
       });
       navigate("/");
     }
@@ -71,7 +71,7 @@ export default function AuthPage() {
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Sparkles className="h-5 w-5" />
           </div>
-          <span className="text-xl font-semibold">AI Tools</span>
+          <span className="text-xl font-semibold">Aideas<span className="text-primary">.ai</span></span>
         </Link>
 
         <Card>

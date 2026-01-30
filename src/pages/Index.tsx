@@ -259,7 +259,7 @@ export default function Index() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <Sparkles className="h-4 w-4" />
               </div>
-              <span className="font-semibold">AI Tools</span>
+              <span className="font-semibold">Aideas<span className="text-primary">.ai</span></span>
             </div>
             <p className="text-sm text-muted-foreground">
               Discover, compare, and choose the best AI tools—powered by AI, validated by humans.
