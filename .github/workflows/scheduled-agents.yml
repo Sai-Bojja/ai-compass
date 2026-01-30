@@ -45,6 +45,23 @@ jobs:
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.agent == 'both' || github.event.inputs.agent == 'ranking'))
     
     steps:
+      - name: Check Secrets
+        run: |
+          if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
+            echo "❌ ERROR: SUPABASE_URL secret is not set!"
+            echo "Go to: https://github.com/Sai-Bojja/ai-compass/settings/secrets/actions"
+            echo "Add secret: SUPABASE_URL = https://YOUR-PROJECT.supabase.co"
+            exit 1
+          fi
+          if [ -z "${{ secrets.SUPABASE_ANON_KEY }}" ]; then
+            echo "❌ ERROR: SUPABASE_ANON_KEY secret is not set!"
+            echo "Go to: https://github.com/Sai-Bojja/ai-compass/settings/secrets/actions"
+            echo "Add secret: SUPABASE_ANON_KEY = your-anon-key-from-supabase"
+            exit 1
+          fi
+          echo "✅ Secrets configured correctly"
+          echo "URL: ${{ secrets.SUPABASE_URL }}/functions/v1/ranking-agent"
+      
       - name: Trigger Ranking Agent
         run: |
           echo "🤖 Triggering Ranking Agent..."
@@ -77,6 +94,18 @@ jobs:
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.agent == 'both' || github.event.inputs.agent == 'community'))
     
     steps:
+      - name: Check Secrets
+        run: |
+          if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
+            echo "❌ ERROR: SUPABASE_URL secret is not set!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.SUPABASE_ANON_KEY }}" ]; then
+            echo "❌ ERROR: SUPABASE_ANON_KEY secret is not set!"
+            exit 1
+          fi
+          echo "✅ Secrets configured correctly"
+      
       - name: Trigger Community Scoring Agent
         run: |
           echo "👥 Triggering Community Scoring Agent..."
