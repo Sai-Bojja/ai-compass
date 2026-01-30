@@ -1,11 +1,12 @@
 -- =====================================================
--- AIDEAS.AI - COMMUNITY Q&A SEED DATA (v2)
+-- AIDEAS.AI - COMMUNITY Q&A SEED DATA (v3)
 -- =====================================================
 -- Realistic Reddit/Slack-style conversations about AI tools.
 -- Each question has multiple answers with varied sentiments.
 --
--- IMPORTANT: This script creates test users in auth.users first,
--- then creates profiles, questions, and answers.
+-- IMPORTANT: This script creates test users in auth.users.
+-- The profiles are AUTO-CREATED by the on_auth_user_created trigger.
+-- DO NOT manually insert into profiles - the trigger handles it.
 --
 -- Run this AFTER the main seed.sql has been applied.
 -- =====================================================
@@ -13,8 +14,8 @@
 -- =====================================================
 -- 1. CREATE TEST USERS IN auth.users
 -- =====================================================
--- These UUIDs will be used for profiles, questions, and answers.
--- We insert minimal required fields into auth.users.
+-- Profiles are auto-created by the on_auth_user_created trigger
+-- defined in the schema migration.
 
 INSERT INTO auth.users (
     id, 
@@ -25,43 +26,28 @@ INSERT INTO auth.users (
     created_at, 
     updated_at,
     aud,
-    role
+    role,
+    raw_user_meta_data
 ) VALUES
-  ('b0000001-0001-0001-0001-000000000001', '00000000-0000-0000-0000-000000000000', 'dev_ninja42@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b0000002-0002-0002-0002-000000000002', '00000000-0000-0000-0000-000000000000', 'ai_enthusiast@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b0000003-0003-0003-0003-000000000003', '00000000-0000-0000-0000-000000000000', 'startup_founder@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b0000004-0004-0004-0004-000000000004', '00000000-0000-0000-0000-000000000000', 'data_guru@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b0000005-0005-0005-0005-000000000005', '00000000-0000-0000-0000-000000000000', 'creative_alex@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b0000006-0006-0006-0006-000000000006', '00000000-0000-0000-0000-000000000000', 'backend_bob@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b0000007-0007-0007-0007-000000000007', '00000000-0000-0000-0000-000000000000', 'content_queen@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b0000008-0008-0008-0008-000000000008', '00000000-0000-0000-0000-000000000000', 'indie_hacker@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b0000009-0009-0009-0009-000000000009', '00000000-0000-0000-0000-000000000000', 'ml_researcher@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b000000a-000a-000a-000a-00000000000a', '00000000-0000-0000-0000-000000000000', 'product_manager@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b000000b-000b-000b-000b-00000000000b', '00000000-0000-0000-0000-000000000000', 'video_creator@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
-  ('b000000c-000c-000c-000c-00000000000c', '00000000-0000-0000-0000-000000000000', 'freelance_writer@test.local', '', now(), now(), now(), 'authenticated', 'authenticated')
+  ('b0000001-0001-0001-0001-000000000001', '00000000-0000-0000-0000-000000000000', 'dev_ninja42@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "dev_ninja42"}'),
+  ('b0000002-0002-0002-0002-000000000002', '00000000-0000-0000-0000-000000000000', 'ai_enthusiast@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "AIEnthusiast"}'),
+  ('b0000003-0003-0003-0003-000000000003', '00000000-0000-0000-0000-000000000000', 'startup_founder@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "startup_founder"}'),
+  ('b0000004-0004-0004-0004-000000000004', '00000000-0000-0000-0000-000000000000', 'data_guru@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "DataScienceGuru"}'),
+  ('b0000005-0005-0005-0005-000000000005', '00000000-0000-0000-0000-000000000000', 'creative_alex@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "creative_alex"}'),
+  ('b0000006-0006-0006-0006-000000000006', '00000000-0000-0000-0000-000000000000', 'backend_bob@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "backend_bob"}'),
+  ('b0000007-0007-0007-0007-000000000007', '00000000-0000-0000-0000-000000000000', 'content_queen@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "content_queen"}'),
+  ('b0000008-0008-0008-0008-000000000008', '00000000-0000-0000-0000-000000000000', 'indie_hacker@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "indie_hacker"}'),
+  ('b0000009-0009-0009-0009-000000000009', '00000000-0000-0000-0000-000000000000', 'ml_researcher@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "ml_researcher"}'),
+  ('b000000a-000a-000a-000a-00000000000a', '00000000-0000-0000-0000-000000000000', 'product_manager@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "product_manager"}'),
+  ('b000000b-000b-000b-000b-00000000000b', '00000000-0000-0000-0000-000000000000', 'video_creator@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "video_creator"}'),
+  ('b000000c-000c-000c-000c-00000000000c', '00000000-0000-0000-0000-000000000000', 'freelance_writer@test.local', '', now(), now(), now(), 'authenticated', 'authenticated', '{"full_name": "freelance_writer"}')
 ON CONFLICT (id) DO NOTHING;
 
--- =====================================================
--- 2. CREATE PROFILES
--- =====================================================
-
-INSERT INTO public.profiles (id, user_id, display_name, avatar_url, bio) VALUES
-  ('b0000001-0001-0001-0001-000000000001', 'b0000001-0001-0001-0001-000000000001', 'dev_ninja42', NULL, 'Full-stack dev, coffee addict'),
-  ('b0000002-0002-0002-0002-000000000002', 'b0000002-0002-0002-0002-000000000002', 'AIEnthusiast', NULL, 'Testing all the AI tools so you dont have to'),
-  ('b0000003-0003-0003-0003-000000000003', 'b0000003-0003-0003-0003-000000000003', 'startup_founder', NULL, 'Building the next big thing'),
-  ('b0000004-0004-0004-0004-000000000004', 'b0000004-0004-0004-0004-000000000004', 'DataScienceGuru', NULL, 'ML engineer at a Fortune 500'),
-  ('b0000005-0005-0005-0005-000000000005', 'b0000005-0005-0005-0005-000000000005', 'creative_alex', NULL, 'Designer & illustrator'),
-  ('b0000006-0006-0006-0006-000000000006', 'b0000006-0006-0006-0006-000000000006', 'backend_bob', NULL, 'Java by day, Rust by night'),
-  ('b0000007-0007-0007-0007-000000000007', 'b0000007-0007-0007-0007-000000000007', 'content_queen', NULL, 'Content marketer & writer'),
-  ('b0000008-0008-0008-0008-000000000008', 'b0000008-0008-0008-0008-000000000008', 'indie_hacker', NULL, 'Solo dev building in public'),
-  ('b0000009-0009-0009-0009-000000000009', 'b0000009-0009-0009-0009-000000000009', 'ml_researcher', NULL, 'PhD in ML, working on NLP'),
-  ('b000000a-000a-000a-000a-00000000000a', 'b000000a-000a-000a-000a-00000000000a', 'product_manager', NULL, 'PM at a Series B startup'),
-  ('b000000b-000b-000b-000b-00000000000b', 'b000000b-000b-000b-000b-00000000000b', 'video_creator', NULL, 'YouTuber and content creator'),
-  ('b000000c-000c-000c-000c-00000000000c', 'b000000c-000c-000c-000c-00000000000c', 'freelance_writer', NULL, 'Copywriter for hire')
-ON CONFLICT (id) DO NOTHING;
+-- NOTE: Profiles are automatically created by the on_auth_user_created trigger
+-- No explicit INSERT INTO profiles needed!
 
 -- =====================================================
--- 3. QUESTIONS (Community Discussions)
+-- 2. QUESTIONS (Community Discussions)
 -- =====================================================
 
 INSERT INTO public.questions (id, user_id, title, body, status) VALUES
@@ -71,180 +57,180 @@ INSERT INTO public.questions (id, user_id, title, body, status) VALUES
  'b0000001-0001-0001-0001-000000000001',
  'Cursor vs GitHub Copilot - which one should I go with?',
  'Hey everyone, I''m currently using VS Code with Copilot but keep hearing about Cursor. Is it worth switching? I mainly work on React/Node projects. Looking for real experiences, not just marketing hype.',
- 'published'),
+ 'active'),
 
 -- Q2: Writing assistant comparison
 ('d0000002-0002-0002-0002-000000000002',
  'b0000007-0007-0007-0007-000000000007',
  'ChatGPT vs Claude for long-form content?',
  'I write blog posts and documentation. Been using ChatGPT Plus but heard Claude handles longer documents better. Anyone actually compared them for writing tasks? Budget isn''t a huge concern.',
- 'published'),
+ 'active'),
 
 -- Q3: Image generation
 ('d0000003-0003-0003-0003-000000000003',
  'b0000005-0005-0005-0005-000000000005',
  'Midjourney alternatives? Getting frustrated with Discord',
  'Love the output quality of Midjourney but the Discord workflow is killing me. Are DALL-E or Stable Diffusion viable alternatives? I need consistent style for brand assets.',
- 'published'),
+ 'active'),
 
 -- Q4: Research tools
 ('d0000004-0004-0004-0004-000000000004',
  'b0000009-0009-0009-0009-000000000009',
  'Perplexity vs Gemini for research?',
  'Working on a literature review and need an AI that can help me find and summarize papers. Tried both briefly - Perplexity cites sources but Gemini feels smarter. What''s your experience?',
- 'published'),
+ 'active'),
 
 -- Q5: Voice synthesis
 ('d0000005-0005-0005-0005-000000000005',
  'b000000b-000b-000b-000b-00000000000b',
  'Is ElevenLabs worth the price for YouTube?',
  'Making educational videos and my voice gets tired doing long recordings. Considering ElevenLabs for voiceovers. Is the quality good enough that viewers won''t notice it''s AI?',
- 'published'),
+ 'active'),
 
 -- Q6: Copilot frustrations
 ('d0000006-0006-0006-0006-000000000006',
  'b0000006-0006-0006-0006-000000000006',
  'GitHub Copilot keeps suggesting garbage code lately',
  'Anyone else notice Copilot quality going down? Past few weeks the suggestions have been way off. Like it''s not even looking at my codebase anymore. Waste of $19/month tbh',
- 'published'),
+ 'active'),
 
 -- Q7: Data analysis
 ('d0000007-0007-0007-0007-000000000007',
  'b0000004-0004-0004-0004-000000000004',
  'Julius AI vs Hex for data analysis?',
  'Non-technical PM here. Need to analyze CSV exports without bothering our data team. Julius looks simpler but Hex seems more powerful. What would you recommend for someone who knows basic SQL?',
- 'published'),
+ 'active'),
 
 -- Q8: Video editing
 ('d0000008-0008-0008-0008-000000000008',
  'b000000b-000b-000b-000b-00000000000b',
  'Runway ML - actually useful or just hype?',
  'Seeing Runway all over my Twitter feed. Is the Gen-2 video generation actually production-ready? Need it for short social clips, nothing crazy.',
- 'published'),
+ 'active'),
 
 -- Q9: Marketing copy
 ('d0000009-0009-0009-0009-000000000009',
  'b0000003-0003-0003-0003-000000000003',
  'Jasper vs ChatGPT for marketing copy?',
  'Running a startup and need to pump out landing pages, ads, and emails. Is Jasper worth the premium price or can ChatGPT do the same thing for less?',
- 'published'),
+ 'active'),
 
 -- Q10: Code privacy
 ('d000000a-000a-000a-000a-00000000000a',
  'b0000006-0006-0006-0006-000000000006',
  'Tabnine for enterprise - anyone using it?',
  'Our security team is blocking Copilot due to code privacy concerns. Tabnine claims they can run locally. Anyone actually set this up? Is it as good as Copilot?',
- 'published'),
+ 'active'),
 
 -- Q11: Stable Diffusion setup
 ('d000000b-000b-000b-000b-00000000000b',
  'b0000008-0008-0008-0008-000000000008',
  'Is Stable Diffusion worth the setup hassle?',
  'Want to generate product mockups for my indie project. SD is free but looks complicated to set up. Should I just pay for Midjourney instead?',
- 'published'),
+ 'active'),
 
 -- Q12: ChatGPT praise
 ('d000000c-000c-000c-000c-00000000000c',
  'b0000002-0002-0002-0002-000000000002',
  'ChatGPT-4 just saved me 20 hours of work',
  'Had to refactor a legacy PHP codebase. GPT-4 understood the entire context and gave me a migration plan. This thing is insane. What are your best productivity wins with ChatGPT?',
- 'published'),
+ 'active'),
 
 -- Q13: Claude long context
 ('d000000d-000d-000d-000d-00000000000d',
  'b0000009-0009-0009-0009-000000000009',
  'Claude 100k context - actually works?',
  'Need to analyze a 200-page legal document. Claude claims 100k context. Has anyone actually tested this with long documents? Does it maintain coherence?',
- 'published'),
+ 'active'),
 
 -- Q14: Gemini comparison
 ('d000000e-000e-000e-000e-00000000000e',
  'b000000a-000a-000a-000a-00000000000a',
  'Gemini vs ChatGPT for daily work tasks?',
  'Company is considering Gemini because of Google Workspace integration. Currently using ChatGPT. Is Gemini good enough to replace it or will the team revolt?',
- 'published'),
+ 'active'),
 
 -- Q15: DALL-E in ChatGPT
 ('d000000f-000f-000f-000f-00000000000f',
  'b0000007-0007-0007-0007-000000000007',
  'DALL-E 3 in ChatGPT is a game changer',
  'Just realized DALL-E 3 is included in ChatGPT Plus. The image quality is so much better than DALL-E 2. And it actually renders text correctly! Anyone else impressed?',
- 'published'),
+ 'active'),
 
 -- Q16: Multiple tool workflow
 ('d0000010-0010-0010-0010-000000000010',
  'b0000008-0008-0008-0008-000000000008',
  'My AI tool stack for solo development',
  'Curious what others are using. Currently: Cursor for coding, ChatGPT for brainstorming, Midjourney for graphics, ElevenLabs for demo videos. What''s your stack?',
- 'published'),
+ 'active'),
 
 -- Q17: Perplexity praise
 ('d0000011-0011-0011-0011-000000000011',
  'b0000002-0002-0002-0002-000000000002',
  'Perplexity Pro is underrated',
  'Been using Perplexity Pro for 3 months and it''s become my default search. The citations are so useful for fact-checking. Why isn''t this more popular?',
- 'published'),
+ 'active'),
 
 -- Q18: Negative Jasper experience
 ('d0000012-0012-0012-0012-000000000012',
  'b000000c-000c-000c-000c-00000000000c',
  'Jasper is overpriced - change my mind',
  'Tried Jasper for a month. The output isn''t better than ChatGPT but costs 5x more. The templates are nice but not $50/month nice. Am I missing something?',
- 'published'),
+ 'active'),
 
 -- Q19: Cursor praise
 ('d0000013-0013-0013-0013-000000000013',
  'b0000001-0001-0001-0001-000000000001',
  'Cursor Composer mode is incredible',
  'Just discovered Composer in Cursor. You can describe a feature and it edits multiple files at once. Actually built a complete auth system in like 10 minutes. Mind blown.',
- 'published'),
+ 'active'),
 
 -- Q20: ElevenLabs quality
 ('d0000014-0014-0014-0014-000000000014',
  'b000000b-000b-000b-000b-00000000000b',
  'Update: ElevenLabs voice quality is crazy good',
  'Posted asking about ElevenLabs a while back. Finally tried it. The voice cloning with just 30 seconds of audio is scary accurate. Worth every penny for content creators.',
- 'published'),
+ 'active'),
 
 -- Q21: Hex for teams
 ('d0000015-0015-0015-0015-000000000015',
  'b0000004-0004-0004-0004-000000000004',
  'Hex vs Jupyter for team data science?',
  'Our data team is growing and Jupyter notebooks are getting messy. Hex looks promising with the collaboration features. Anyone made this switch?',
- 'published'),
+ 'active'),
 
 -- Q22: Video creation workflow
 ('d0000016-0016-0016-0016-000000000016',
  'b000000b-000b-000b-000b-00000000000b',
  'Runway + ElevenLabs = full AI video pipeline?',
  'Thinking about creating videos entirely with AI. Runway for visuals, ElevenLabs for voice. Has anyone tried this combo? Is the quality there yet?',
- 'published'),
+ 'active'),
 
 -- Q23: Tabnine vs Copilot
 ('d0000017-0017-0017-0017-000000000017',
  'b0000006-0006-0006-0006-000000000006',
  'Switched from Copilot to Tabnine - my experience',
  'After 6 months with Copilot, tried Tabnine for the privacy features. It''s... okay. Definitely not as smart but the local model is fast and secure. Trade-offs.',
- 'published'),
+ 'active'),
 
 -- Q24: Claude praise
 ('d0000018-0018-0018-0018-000000000018',
  'b0000009-0009-0009-0009-000000000009',
  'Claude just explained a complex paper better than my advisor',
  'Fed Claude a dense ML paper and asked for an ELI5. The explanation was so clear I finally understood attention mechanisms. This is the future of learning.',
- 'published'),
+ 'active'),
 
 -- Q25: Julius for non-technical
 ('d0000019-0019-0019-0019-000000000019',
  'b000000a-000a-000a-000a-00000000000a',
  'Julius AI review from a non-coder',
  'Finally found a data tool I can actually use! Julius lets me upload CSVs and ask questions in plain English. Made charts my boss loved without touching Excel. Highly recommend for PMs.',
- 'published')
+ 'active')
 
 ON CONFLICT (id) DO NOTHING;
 
 -- =====================================================
--- 4. ANSWERS (Multiple per question, varied sentiments)
+-- 3. ANSWERS (Multiple per question, varied sentiments)
 -- =====================================================
 
 INSERT INTO public.answers (id, question_id, user_id, body, is_accepted) VALUES
@@ -601,92 +587,92 @@ INSERT INTO public.answers (id, question_id, user_id, body, is_accepted) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- =====================================================
--- 5. QUESTION-TOOL MENTIONS (For Community Scoring)
+-- 4. QUESTION-TOOL MENTIONS (For Community Scoring)
 -- =====================================================
 -- Maps questions to the tools they mention for faster lookups
 
-INSERT INTO public.question_tool_mentions (question_id, tool_id, mention_count) VALUES
+INSERT INTO public.question_tool_mentions (question_id, tool_id) VALUES
   -- Q1 mentions: Cursor, GitHub Copilot
-  ('d0000001-0001-0001-0001-000000000001', 'a1111111-1111-1111-1111-111111111112', 1), -- Cursor
-  ('d0000001-0001-0001-0001-000000000001', 'a1111111-1111-1111-1111-111111111111', 1), -- Copilot
+  ('d0000001-0001-0001-0001-000000000001', 'a1111111-1111-1111-1111-111111111112'), -- Cursor
+  ('d0000001-0001-0001-0001-000000000001', 'a1111111-1111-1111-1111-111111111111'), -- Copilot
   -- Q2 mentions: ChatGPT, Claude
-  ('d0000002-0002-0002-0002-000000000002', 'a2222222-2222-2222-2222-222222222221', 1), -- ChatGPT
-  ('d0000002-0002-0002-0002-000000000002', 'a2222222-2222-2222-2222-222222222222', 1), -- Claude
+  ('d0000002-0002-0002-0002-000000000002', 'a2222222-2222-2222-2222-222222222221'), -- ChatGPT
+  ('d0000002-0002-0002-0002-000000000002', 'a2222222-2222-2222-2222-222222222222'), -- Claude
   -- Q3 mentions: Midjourney, DALL-E, Stable Diffusion
-  ('d0000003-0003-0003-0003-000000000003', 'a4444444-4444-4444-4444-444444444441', 1), -- Midjourney
-  ('d0000003-0003-0003-0003-000000000003', 'a4444444-4444-4444-4444-444444444442', 1), -- DALL-E
-  ('d0000003-0003-0003-0003-000000000003', 'a4444444-4444-4444-4444-444444444443', 1), -- SD
+  ('d0000003-0003-0003-0003-000000000003', 'a4444444-4444-4444-4444-444444444441'), -- Midjourney
+  ('d0000003-0003-0003-0003-000000000003', 'a4444444-4444-4444-4444-444444444442'), -- DALL-E
+  ('d0000003-0003-0003-0003-000000000003', 'a4444444-4444-4444-4444-444444444443'), -- SD
   -- Q4 mentions: Perplexity, Gemini
-  ('d0000004-0004-0004-0004-000000000004', 'a3333333-3333-3333-3333-333333333332', 1), -- Perplexity
-  ('d0000004-0004-0004-0004-000000000004', 'a3333333-3333-3333-3333-333333333331', 1), -- Gemini
+  ('d0000004-0004-0004-0004-000000000004', 'a3333333-3333-3333-3333-333333333332'), -- Perplexity
+  ('d0000004-0004-0004-0004-000000000004', 'a3333333-3333-3333-3333-333333333331'), -- Gemini
   -- Q5 mentions: ElevenLabs
-  ('d0000005-0005-0005-0005-000000000005', 'a5555555-5555-5555-5555-555555555551', 1), -- ElevenLabs
+  ('d0000005-0005-0005-0005-000000000005', 'a5555555-5555-5555-5555-555555555551'), -- ElevenLabs
   -- Q6 mentions: GitHub Copilot
-  ('d0000006-0006-0006-0006-000000000006', 'a1111111-1111-1111-1111-111111111111', 1), -- Copilot
+  ('d0000006-0006-0006-0006-000000000006', 'a1111111-1111-1111-1111-111111111111'), -- Copilot
   -- Q7 mentions: Julius, Hex
-  ('d0000007-0007-0007-0007-000000000007', 'a7777777-7777-7777-7777-777777777771', 1), -- Julius
-  ('d0000007-0007-0007-0007-000000000007', 'a7777777-7777-7777-7777-777777777772', 1), -- Hex
+  ('d0000007-0007-0007-0007-000000000007', 'a7777777-7777-7777-7777-777777777771'), -- Julius
+  ('d0000007-0007-0007-0007-000000000007', 'a7777777-7777-7777-7777-777777777772'), -- Hex
   -- Q8 mentions: Runway
-  ('d0000008-0008-0008-0008-000000000008', 'a6666666-6666-6666-6666-666666666661', 1), -- Runway
+  ('d0000008-0008-0008-0008-000000000008', 'a6666666-6666-6666-6666-666666666661'), -- Runway
   -- Q9 mentions: Jasper, ChatGPT
-  ('d0000009-0009-0009-0009-000000000009', 'a2222222-2222-2222-2222-222222222223', 1), -- Jasper
-  ('d0000009-0009-0009-0009-000000000009', 'a2222222-2222-2222-2222-222222222221', 1), -- ChatGPT
+  ('d0000009-0009-0009-0009-000000000009', 'a2222222-2222-2222-2222-222222222223'), -- Jasper
+  ('d0000009-0009-0009-0009-000000000009', 'a2222222-2222-2222-2222-222222222221'), -- ChatGPT
   -- Q10 mentions: Tabnine, Copilot
-  ('d000000a-000a-000a-000a-00000000000a', 'a1111111-1111-1111-1111-111111111113', 1), -- Tabnine
-  ('d000000a-000a-000a-000a-00000000000a', 'a1111111-1111-1111-1111-111111111111', 1), -- Copilot
+  ('d000000a-000a-000a-000a-00000000000a', 'a1111111-1111-1111-1111-111111111113'), -- Tabnine
+  ('d000000a-000a-000a-000a-00000000000a', 'a1111111-1111-1111-1111-111111111111'), -- Copilot
   -- Q11 mentions: Stable Diffusion, Midjourney
-  ('d000000b-000b-000b-000b-00000000000b', 'a4444444-4444-4444-4444-444444444443', 1), -- SD
-  ('d000000b-000b-000b-000b-00000000000b', 'a4444444-4444-4444-4444-444444444441', 1), -- Midjourney
+  ('d000000b-000b-000b-000b-00000000000b', 'a4444444-4444-4444-4444-444444444443'), -- SD
+  ('d000000b-000b-000b-000b-00000000000b', 'a4444444-4444-4444-4444-444444444441'), -- Midjourney
   -- Q12 mentions: ChatGPT
-  ('d000000c-000c-000c-000c-00000000000c', 'a2222222-2222-2222-2222-222222222221', 1), -- ChatGPT
+  ('d000000c-000c-000c-000c-00000000000c', 'a2222222-2222-2222-2222-222222222221'), -- ChatGPT
   -- Q13 mentions: Claude
-  ('d000000d-000d-000d-000d-00000000000d', 'a2222222-2222-2222-2222-222222222222', 1), -- Claude
+  ('d000000d-000d-000d-000d-00000000000d', 'a2222222-2222-2222-2222-222222222222'), -- Claude
   -- Q14 mentions: Gemini, ChatGPT
-  ('d000000e-000e-000e-000e-00000000000e', 'a3333333-3333-3333-3333-333333333331', 1), -- Gemini
-  ('d000000e-000e-000e-000e-00000000000e', 'a2222222-2222-2222-2222-222222222221', 1), -- ChatGPT
+  ('d000000e-000e-000e-000e-00000000000e', 'a3333333-3333-3333-3333-333333333331'), -- Gemini
+  ('d000000e-000e-000e-000e-00000000000e', 'a2222222-2222-2222-2222-222222222221'), -- ChatGPT
   -- Q15 mentions: DALL-E, ChatGPT
-  ('d000000f-000f-000f-000f-00000000000f', 'a4444444-4444-4444-4444-444444444442', 1), -- DALL-E
-  ('d000000f-000f-000f-000f-00000000000f', 'a2222222-2222-2222-2222-222222222221', 1), -- ChatGPT
+  ('d000000f-000f-000f-000f-00000000000f', 'a4444444-4444-4444-4444-444444444442'), -- DALL-E
+  ('d000000f-000f-000f-000f-00000000000f', 'a2222222-2222-2222-2222-222222222221'), -- ChatGPT
   -- Q16 mentions: Cursor, ChatGPT, Midjourney, ElevenLabs
-  ('d0000010-0010-0010-0010-000000000010', 'a1111111-1111-1111-1111-111111111112', 1), -- Cursor
-  ('d0000010-0010-0010-0010-000000000010', 'a2222222-2222-2222-2222-222222222221', 1), -- ChatGPT
-  ('d0000010-0010-0010-0010-000000000010', 'a4444444-4444-4444-4444-444444444441', 1), -- Midjourney
-  ('d0000010-0010-0010-0010-000000000010', 'a5555555-5555-5555-5555-555555555551', 1), -- ElevenLabs
+  ('d0000010-0010-0010-0010-000000000010', 'a1111111-1111-1111-1111-111111111112'), -- Cursor
+  ('d0000010-0010-0010-0010-000000000010', 'a2222222-2222-2222-2222-222222222221'), -- ChatGPT
+  ('d0000010-0010-0010-0010-000000000010', 'a4444444-4444-4444-4444-444444444441'), -- Midjourney
+  ('d0000010-0010-0010-0010-000000000010', 'a5555555-5555-5555-5555-555555555551'), -- ElevenLabs
   -- Q17 mentions: Perplexity
-  ('d0000011-0011-0011-0011-000000000011', 'a3333333-3333-3333-3333-333333333332', 1), -- Perplexity
+  ('d0000011-0011-0011-0011-000000000011', 'a3333333-3333-3333-3333-333333333332'), -- Perplexity
   -- Q18 mentions: Jasper, ChatGPT
-  ('d0000012-0012-0012-0012-000000000012', 'a2222222-2222-2222-2222-222222222223', 1), -- Jasper
-  ('d0000012-0012-0012-0012-000000000012', 'a2222222-2222-2222-2222-222222222221', 1), -- ChatGPT
+  ('d0000012-0012-0012-0012-000000000012', 'a2222222-2222-2222-2222-222222222223'), -- Jasper
+  ('d0000012-0012-0012-0012-000000000012', 'a2222222-2222-2222-2222-222222222221'), -- ChatGPT
   -- Q19 mentions: Cursor, Copilot
-  ('d0000013-0013-0013-0013-000000000013', 'a1111111-1111-1111-1111-111111111112', 1), -- Cursor
-  ('d0000013-0013-0013-0013-000000000013', 'a1111111-1111-1111-1111-111111111111', 1), -- Copilot
+  ('d0000013-0013-0013-0013-000000000013', 'a1111111-1111-1111-1111-111111111112'), -- Cursor
+  ('d0000013-0013-0013-0013-000000000013', 'a1111111-1111-1111-1111-111111111111'), -- Copilot
   -- Q20 mentions: ElevenLabs
-  ('d0000014-0014-0014-0014-000000000014', 'a5555555-5555-5555-5555-555555555551', 1), -- ElevenLabs
+  ('d0000014-0014-0014-0014-000000000014', 'a5555555-5555-5555-5555-555555555551'), -- ElevenLabs
   -- Q21 mentions: Hex
-  ('d0000015-0015-0015-0015-000000000015', 'a7777777-7777-7777-7777-777777777772', 1), -- Hex
+  ('d0000015-0015-0015-0015-000000000015', 'a7777777-7777-7777-7777-777777777772'), -- Hex
   -- Q22 mentions: Runway, ElevenLabs
-  ('d0000016-0016-0016-0016-000000000016', 'a6666666-6666-6666-6666-666666666661', 1), -- Runway
-  ('d0000016-0016-0016-0016-000000000016', 'a5555555-5555-5555-5555-555555555551', 1), -- ElevenLabs
+  ('d0000016-0016-0016-0016-000000000016', 'a6666666-6666-6666-6666-666666666661'), -- Runway
+  ('d0000016-0016-0016-0016-000000000016', 'a5555555-5555-5555-5555-555555555551'), -- ElevenLabs
   -- Q23 mentions: Tabnine, Copilot
-  ('d0000017-0017-0017-0017-000000000017', 'a1111111-1111-1111-1111-111111111113', 1), -- Tabnine
-  ('d0000017-0017-0017-0017-000000000017', 'a1111111-1111-1111-1111-111111111111', 1), -- Copilot
+  ('d0000017-0017-0017-0017-000000000017', 'a1111111-1111-1111-1111-111111111113'), -- Tabnine
+  ('d0000017-0017-0017-0017-000000000017', 'a1111111-1111-1111-1111-111111111111'), -- Copilot
   -- Q24 mentions: Claude
-  ('d0000018-0018-0018-0018-000000000018', 'a2222222-2222-2222-2222-222222222222', 1), -- Claude
+  ('d0000018-0018-0018-0018-000000000018', 'a2222222-2222-2222-2222-222222222222'), -- Claude
   -- Q25 mentions: Julius
-  ('d0000019-0019-0019-0019-000000000019', 'a7777777-7777-7777-7777-777777777771', 1) -- Julius
+  ('d0000019-0019-0019-0019-000000000019', 'a7777777-7777-7777-7777-777777777771') -- Julius
 ON CONFLICT DO NOTHING;
 
 -- =====================================================
 -- SUMMARY
 -- =====================================================
--- Auth Users: 12 test users (with @test.local emails)
--- Profiles: 12 community members
+-- Auth Users: 12 test users (profiles auto-created by trigger)
 -- Questions: 25 threads
 -- Answers: 54 responses (avg 2.2 per question)
 -- Tool mentions: 46 explicit mappings (all 16 tools covered)
 --
--- Distribution of sentiments (estimated):
--- - Positive: ~60% (praise, recommendations)
--- - Neutral: ~25% (comparisons, trade-offs)
--- - Negative: ~15% (complaints, disappointments)
+-- KEY CHANGES IN v3:
+-- - Removed explicit profiles INSERT (auto-created by trigger)
+-- - Changed status from 'published' to 'active' (enum value)
+-- - Removed mention_count column (doesn't exist in schema)
+-- - Added raw_user_meta_data for proper profile creation
 -- =====================================================
