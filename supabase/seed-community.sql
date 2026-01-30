@@ -1,41 +1,67 @@
 -- =====================================================
--- AIDEAS.AI - COMMUNITY Q&A SEED DATA
+-- AIDEAS.AI - COMMUNITY Q&A SEED DATA (v2)
 -- =====================================================
 -- Realistic Reddit/Slack-style conversations about AI tools.
 -- Each question has multiple answers with varied sentiments.
 --
--- Run this AFTER the main seed.sql has been applied.
--- This adds to existing data, does NOT truncate.
+-- IMPORTANT: This script creates test users in auth.users first,
+-- then creates profiles, questions, and answers.
 --
--- Tables populated:
---   - profiles (anonymous community members)
---   - questions
---   - answers
---   - question_tool_mentions
+-- Run this AFTER the main seed.sql has been applied.
 -- =====================================================
 
 -- =====================================================
--- 1. ANONYMOUS PROFILES (Community Members)
+-- 1. CREATE TEST USERS IN auth.users
 -- =====================================================
--- These simulate real community users without requiring auth
+-- These UUIDs will be used for profiles, questions, and answers.
+-- We insert minimal required fields into auth.users.
 
-INSERT INTO public.profiles (id, display_name, avatar_url, bio) VALUES
-  ('b0000001-0001-0001-0001-000000000001', 'dev_ninja42', NULL, 'Full-stack dev, coffee addict'),
-  ('b0000002-0002-0002-0002-000000000002', 'AIEnthusiast', NULL, 'Testing all the AI tools so you dont have to'),
-  ('b0000003-0003-0003-0003-000000000003', 'startup_founder', NULL, 'Building the next big thing'),
-  ('b0000004-0004-0004-0004-000000000004', 'DataScienceGuru', NULL, 'ML engineer at a Fortune 500'),
-  ('b0000005-0005-0005-0005-000000000005', 'creative_alex', NULL, 'Designer & illustrator'),
-  ('b0000006-0006-0006-0006-000000000006', 'backend_bob', NULL, 'Java by day, Rust by night'),
-  ('b0000007-0007-0007-0007-000000000007', 'content_queen', NULL, 'Content marketer & writer'),
-  ('b0000008-0008-0008-0008-000000000008', 'indie_hacker', NULL, 'Solo dev building in public'),
-  ('b0000009-0009-0009-0009-000000000009', 'ml_researcher', NULL, 'PhD in ML, working on NLP'),
-  ('b000000a-000a-000a-000a-00000000000a', 'product_manager', NULL, 'PM at a Series B startup'),
-  ('b000000b-000b-000b-000b-00000000000b', 'video_creator', NULL, 'YouTuber and content creator'),
-  ('b000000c-000c-000c-000c-00000000000c', 'freelance_writer', NULL, 'Copywriter for hire')
+INSERT INTO auth.users (
+    id, 
+    instance_id,
+    email, 
+    encrypted_password, 
+    email_confirmed_at, 
+    created_at, 
+    updated_at,
+    aud,
+    role
+) VALUES
+  ('b0000001-0001-0001-0001-000000000001', '00000000-0000-0000-0000-000000000000', 'dev_ninja42@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b0000002-0002-0002-0002-000000000002', '00000000-0000-0000-0000-000000000000', 'ai_enthusiast@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b0000003-0003-0003-0003-000000000003', '00000000-0000-0000-0000-000000000000', 'startup_founder@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b0000004-0004-0004-0004-000000000004', '00000000-0000-0000-0000-000000000000', 'data_guru@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b0000005-0005-0005-0005-000000000005', '00000000-0000-0000-0000-000000000000', 'creative_alex@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b0000006-0006-0006-0006-000000000006', '00000000-0000-0000-0000-000000000000', 'backend_bob@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b0000007-0007-0007-0007-000000000007', '00000000-0000-0000-0000-000000000000', 'content_queen@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b0000008-0008-0008-0008-000000000008', '00000000-0000-0000-0000-000000000000', 'indie_hacker@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b0000009-0009-0009-0009-000000000009', '00000000-0000-0000-0000-000000000000', 'ml_researcher@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b000000a-000a-000a-000a-00000000000a', '00000000-0000-0000-0000-000000000000', 'product_manager@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b000000b-000b-000b-000b-00000000000b', '00000000-0000-0000-0000-000000000000', 'video_creator@test.local', '', now(), now(), now(), 'authenticated', 'authenticated'),
+  ('b000000c-000c-000c-000c-00000000000c', '00000000-0000-0000-0000-000000000000', 'freelance_writer@test.local', '', now(), now(), now(), 'authenticated', 'authenticated')
 ON CONFLICT (id) DO NOTHING;
 
 -- =====================================================
--- 2. QUESTIONS (Community Discussions)
+-- 2. CREATE PROFILES
+-- =====================================================
+
+INSERT INTO public.profiles (id, user_id, display_name, avatar_url, bio) VALUES
+  ('b0000001-0001-0001-0001-000000000001', 'b0000001-0001-0001-0001-000000000001', 'dev_ninja42', NULL, 'Full-stack dev, coffee addict'),
+  ('b0000002-0002-0002-0002-000000000002', 'b0000002-0002-0002-0002-000000000002', 'AIEnthusiast', NULL, 'Testing all the AI tools so you dont have to'),
+  ('b0000003-0003-0003-0003-000000000003', 'b0000003-0003-0003-0003-000000000003', 'startup_founder', NULL, 'Building the next big thing'),
+  ('b0000004-0004-0004-0004-000000000004', 'b0000004-0004-0004-0004-000000000004', 'DataScienceGuru', NULL, 'ML engineer at a Fortune 500'),
+  ('b0000005-0005-0005-0005-000000000005', 'b0000005-0005-0005-0005-000000000005', 'creative_alex', NULL, 'Designer & illustrator'),
+  ('b0000006-0006-0006-0006-000000000006', 'b0000006-0006-0006-0006-000000000006', 'backend_bob', NULL, 'Java by day, Rust by night'),
+  ('b0000007-0007-0007-0007-000000000007', 'b0000007-0007-0007-0007-000000000007', 'content_queen', NULL, 'Content marketer & writer'),
+  ('b0000008-0008-0008-0008-000000000008', 'b0000008-0008-0008-0008-000000000008', 'indie_hacker', NULL, 'Solo dev building in public'),
+  ('b0000009-0009-0009-0009-000000000009', 'b0000009-0009-0009-0009-000000000009', 'ml_researcher', NULL, 'PhD in ML, working on NLP'),
+  ('b000000a-000a-000a-000a-00000000000a', 'b000000a-000a-000a-000a-00000000000a', 'product_manager', NULL, 'PM at a Series B startup'),
+  ('b000000b-000b-000b-000b-00000000000b', 'b000000b-000b-000b-000b-00000000000b', 'video_creator', NULL, 'YouTuber and content creator'),
+  ('b000000c-000c-000c-000c-00000000000c', 'b000000c-000c-000c-000c-00000000000c', 'freelance_writer', NULL, 'Copywriter for hire')
+ON CONFLICT (id) DO NOTHING;
+
+-- =====================================================
+-- 3. QUESTIONS (Community Discussions)
 -- =====================================================
 
 INSERT INTO public.questions (id, user_id, title, body, status) VALUES
@@ -218,7 +244,7 @@ INSERT INTO public.questions (id, user_id, title, body, status) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- =====================================================
--- 3. ANSWERS (Multiple per question, varied sentiments)
+-- 4. ANSWERS (Multiple per question, varied sentiments)
 -- =====================================================
 
 INSERT INTO public.answers (id, question_id, user_id, body, is_accepted) VALUES
@@ -575,7 +601,7 @@ INSERT INTO public.answers (id, question_id, user_id, body, is_accepted) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- =====================================================
--- 4. QUESTION-TOOL MENTIONS (For Community Scoring)
+-- 5. QUESTION-TOOL MENTIONS (For Community Scoring)
 -- =====================================================
 -- Maps questions to the tools they mention for faster lookups
 
@@ -653,6 +679,7 @@ ON CONFLICT DO NOTHING;
 -- =====================================================
 -- SUMMARY
 -- =====================================================
+-- Auth Users: 12 test users (with @test.local emails)
 -- Profiles: 12 community members
 -- Questions: 25 threads
 -- Answers: 54 responses (avg 2.2 per question)
@@ -662,7 +689,4 @@ ON CONFLICT DO NOTHING;
 -- - Positive: ~60% (praise, recommendations)
 -- - Neutral: ~25% (comparisons, trade-offs)
 -- - Negative: ~15% (complaints, disappointments)
---
--- This creates realistic community scoring data that
--- will produce differentiated scores across tools.
 -- =====================================================
