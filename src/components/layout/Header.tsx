@@ -1,7 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search, Menu, X, Sparkles, MessageCircle, LogIn, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
@@ -16,14 +16,29 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if we're on the tools page
+  const isOnToolsPage = location.pathname === "/tools";
 
   const navLinks = [
-    { href: "/tools", label: "Tools" },
-    { href: "/tools?category=code", label: "Code" },
-    { href: "/tools?category=writing", label: "Writing" },
-    { href: "/tools?category=brainstorming", label: "Brainstorming" },
-    { href: "/community", label: "Community" },
+    { href: "/tools", label: "Tools", category: null },
+    { href: "/tools?category=code", label: "Code", category: "code" },
+    { href: "/tools?category=writing", label: "Writing", category: "writing" },
+    { href: "/tools?category=brainstorming", label: "Brainstorming", category: "brainstorming" },
+    { href: "/community", label: "Community", category: null },
   ];
+
+  // Handle nav link click - use navigate for category links to force update
+  const handleNavClick = useCallback((href: string, category: string | null) => {
+    if (category && isOnToolsPage) {
+      // Force navigation with replace to update query params on same page
+      navigate(href, { replace: true });
+      window.location.href = href; // Force page to recognize the change
+    } else {
+      navigate(href);
+    }
+  }, [isOnToolsPage, navigate]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -39,13 +54,13 @@ export function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
-            <Link
+            <button
               key={link.href}
-              to={link.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground link-underline"
+              onClick={() => handleNavClick(link.href, link.category)}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground link-underline bg-transparent border-none cursor-pointer"
             >
               {link.label}
-            </Link>
+            </button>
           ))}
         </nav>
 
@@ -117,14 +132,16 @@ export function Header() {
         <div className="md:hidden border-t bg-background animate-fade-in">
           <nav className="container py-4 flex flex-col gap-2">
             {navLinks.map((link) => (
-              <Link
+              <button
                 key={link.href}
-                to={link.href}
-                className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors text-left bg-transparent border-none cursor-pointer w-full"
+                onClick={() => {
+                  handleNavClick(link.href, link.category);
+                  setMobileMenuOpen(false);
+                }}
               >
                 {link.label}
-              </Link>
+              </button>
             ))}
             <div className="pt-2 border-t mt-2 flex gap-2">
               <Button variant="outline" size="sm" className="flex-1" onClick={() => navigate("/search")}>

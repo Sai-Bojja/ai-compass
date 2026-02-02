@@ -33,6 +33,9 @@ export function ScoreBreakdown({
   className,
   showLabels = true,
 }: ScoreBreakdownProps) {
+  // Calculate overall as simple average of AI and Community
+  const overallScore = Math.round((aiScore + communityScore) / 2);
+
   const scores = [
     {
       label: "AI Score",
@@ -47,10 +50,10 @@ export function ScoreBreakdown({
       description: "Score derived from community discussions, votes, and sentiment",
     },
     {
-      label: "Composite",
-      value: compositeScore,
+      label: "Overall",
+      value: overallScore,
       icon: CheckCircle,
-      description: "Weighted combination of AI and community scores (60/40)",
+      description: "Average of AI and community scores",
     },
     {
       label: "Confidence",

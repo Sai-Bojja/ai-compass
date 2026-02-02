@@ -91,10 +91,10 @@ export function ToolCard({ tool, rank, showRank = false }: ToolCardProps) {
                   </p>
                 </div>
 
-                {/* Score */}
+                {/* Score - calculated as average of AI and Community */}
                 <div className="flex-shrink-0 text-right">
-                  <div className={cn("text-xl font-bold tabular-nums", getScoreColor(Number(tool.composite_score)))}>
-                    {Number(tool.composite_score).toFixed(0)}
+                  <div className={cn("text-xl font-bold tabular-nums", getScoreColor(Math.round((Number(tool.ai_score) + Number(tool.community_score)) / 2)))}>
+                    {Math.round((Number(tool.ai_score) + Number(tool.community_score)) / 2)}
                   </div>
                   <div className="text-xs text-muted-foreground">Overall</div>
                 </div>

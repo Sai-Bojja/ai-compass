@@ -51,6 +51,11 @@ function getScoreColor(score: number): string {
     return "text-red-600 dark:text-red-400";
 }
 
+// Calculate overall score as average of AI and Community
+function getOverallScore(tool: ToolData): number {
+    return Math.round((Number(tool.ai_score) + Number(tool.community_score)) / 2);
+}
+
 function ToolComparisonCard({ tool }: { tool: ToolData }) {
     return (
         <Card className="flex-1 min-w-0">
@@ -103,8 +108,8 @@ function ToolComparisonCard({ tool }: { tool: ToolData }) {
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <span className="flex items-center gap-1 cursor-help justify-end">
-                                    <span className={cn("text-2xl font-bold tabular-nums", getScoreColor(Number(tool.composite_score)))}>
-                                        {Math.round(Number(tool.composite_score))}
+                                    <span className={cn("text-2xl font-bold tabular-nums", getScoreColor(getOverallScore(tool)))}>
+                                        {getOverallScore(tool)}
                                     </span>
                                     <Info className="h-3 w-3 text-muted-foreground" />
                                 </span>
@@ -191,11 +196,11 @@ export default function ToolComparePage() {
         if (selectedTools.length < 2) return null;
 
         const sorted = [...selectedTools].sort(
-            (a, b) => Math.round(Number(b.composite_score)) - Math.round(Number(a.composite_score))
+            (a, b) => getOverallScore(b) - getOverallScore(a)
         );
         const highest = sorted[0];
         const secondHighest = sorted[1];
-        const diff = Math.round(Number(highest.composite_score)) - Math.round(Number(secondHighest.composite_score));
+        const diff = getOverallScore(highest) - getOverallScore(secondHighest);
 
         if (diff === 0) return { tie: true, winner: null, diff: 0 };
         return { tie: false, winner: highest, diff };
@@ -381,8 +386,8 @@ export default function ToolComparePage() {
                                             <span className="text-muted-foreground font-medium">vs</span>
                                         )}
                                         <div className="text-center">
-                                            <div className={cn("text-2xl font-bold tabular-nums", getScoreColor(Number(tool.composite_score)))}>
-                                                {Math.round(Number(tool.composite_score))}
+                                            <div className={cn("text-2xl font-bold tabular-nums", getScoreColor(getOverallScore(tool)))}>
+                                                {getOverallScore(tool)}
                                             </div>
                                             <div className="text-xs text-muted-foreground">{tool.name}</div>
                                         </div>
